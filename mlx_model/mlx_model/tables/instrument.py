@@ -1,18 +1,12 @@
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, ForeignKey, \
         LargeBinary, Unicode
+from mlx_model.mlx_model.base import MLXBase
 
 
-Base = declarative_base()
-
-
-class Instrument(Base):
+class Instrument(MLXBase):
     __tablename__ = 'instrument'
 
     id = Column(Integer, primary_key=True)
     nombre = Column(String(50), nullable=False)
     description = Column(Unicode)
     picture = Column(LargeBinary, nullable=True)
-
-    def as_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

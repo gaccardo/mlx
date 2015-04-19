@@ -1,12 +1,10 @@
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, ForeignKey, \
             LargeBinary, Unicode
 import sqlalchemy_utils.types as st
+from mlx_model.mlx_model.base import MLXBase
 
-Base = declarative_base()
 
-
-class User(Base):
+class User(MLXBase):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
@@ -16,6 +14,3 @@ class User(Base):
     password = Column(st.password.PasswordType(
         schemes=['md5_crypt'],
     ))
-
-    def as_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
