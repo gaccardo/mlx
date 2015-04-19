@@ -13,3 +13,6 @@ class Instrument(Base):
     nombre = Column(String(50), nullable=False)
     description = Column(Unicode)
     picture = Column(LargeBinary, nullable=True)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
