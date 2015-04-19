@@ -19,7 +19,8 @@ def upgrade():
         'instrument',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('nombre', sa.String(50), nullable=False),
-        sa.Column('description', sa.Unicode(200))
+        sa.Column('description', sa.Unicode(200)),
+        sa.Column('picture', sa.Binary),
     )
 
 
