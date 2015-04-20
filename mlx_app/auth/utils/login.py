@@ -1,6 +1,7 @@
 from mlx_model.mlx_model.tables import user as mlx_user, \
     token as mlx_token
 from mlx_model.mlx_model import session as sss
+from mlx_app.auth import token as token_validator
 from passlib.hash import md5_crypt
 from flask import session, Response
 from functools import wraps
@@ -12,6 +13,13 @@ import os
 class Authentication(object):
 
     def generate_token(self, user):
+        import ipdb;ipdb.set_trace()
+        pre_token = token_validator.valid_tokens_for_user(user)
+        
+        if pre_token is not None:
+            if token_validator.exists_user_token(pre_token):
+                return pre_token
+
         session_creator = sss.CreateSession()
         se = session_creator.get_session()
         pre_token = hashlib.sha1(os.urandom(128)).hexdigest()

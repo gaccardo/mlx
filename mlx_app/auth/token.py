@@ -7,6 +7,24 @@ from settings import settings
 from datetime import datetime, date, time
 
 
+def valid_tokens_for_user(user):
+    cs = session.CreateSession()
+    se = cs.get_session()
+
+    search = se.query(
+        token.Token
+    ).filter(
+        token.Token.user_id == user.id
+    ).filter(
+        token.Token.is_valid == 1
+    ).first()
+    se.close()
+
+    if search is not None:
+        return search.token
+    
+    return None
+
 def exists_user_token(given_token):
     cs = session.CreateSession()
     se = cs.get_session()
