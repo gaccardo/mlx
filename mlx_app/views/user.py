@@ -68,7 +68,31 @@ def get_user_instruments(id):
 @token.check_token
 @group.its_me
 def add_instrument_to_user(id):
-    return "add instrument to user %s" % id
+    data = request.get_json()
+    cs = session.CreateSession()
+    se = cs.get_session()
+
+    if 'instrument' not in data.keys():
+        return Response('Missing arguments', 403)
+
+    search = se.query(
+        mlx_user_instrument.UserInstrument
+    ).filter(
+        mlx_user_instrument.UserInstrument.user_id == id
+    ).filter(
+        mlx_user_instrument.UserInstrument.instrument_id == \
+        data['instrument']
+    ).first()
+
+    if search is None:
+        new_instrument2user = \
+            mlx_user_instrument.UserInstrument(user_id=id, 
+                                               instrument_id=data['instrument'])
+        se.add(new_instrument2user)
+        se.commit()
+        return Response('Instrument added to user %d' % id, 200)
+    else:
+        return Response('Instrument already assigned to the user', 201)
 
 
 @app.route('%s/user/<int:id>/instruments/del' % settings.BASE_URL,
