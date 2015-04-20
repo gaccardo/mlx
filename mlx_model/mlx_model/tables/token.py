@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, \
-            LargeBinary, Unicode, TIMESTAMP
+            LargeBinary, Unicode, TIMESTAMP, Boolean
 import sqlalchemy_utils.types as st
 from mlx_model.mlx_model.base import MLXBase
 from mlx_model.mlx_model.tables import user
@@ -12,3 +12,4 @@ class Token(MLXBase):
     token = Column(String(50), nullable=False)
     datetime = Column(TIMESTAMP)
     user_id = Column(Integer, ForeignKey(user.User.id))
+    is_valid = Column(Boolean)
