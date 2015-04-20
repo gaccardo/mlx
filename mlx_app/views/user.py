@@ -287,3 +287,37 @@ def get_user_gatherings(id):
 
     
     return jsonify(result)
+
+@app.route('%s/user/<int:id>/gatherings/del' % settings.BASE_URL,
+    methods=['POST'])
+@token.check_token
+@group.its_me
+def del_gathering_from_user(id):
+    data = request.get_json()
+
+    if data is None:
+        return Response('Missing arguments', 403)
+
+    if 'gathering' not in data.keys():
+        return Response('Missing arguments', 403)
+
+    cs = session.CreateSession()
+    se = cs.get_session()
+
+    search = se.query(
+        gathering.UserGathering
+    ).filter(
+        gathering.UserGathering.participant_id == id
+    ).filter(
+        gathering.UserGathering.gathering_id == \
+        data['gathering']
+    ).first()
+
+    if search is None:
+        return Response("Nothing to delete", 201)
+
+    se.delete(search)
+    se.commit()
+    se.close()
+
+    return Response("User removed from gathering", 200)
