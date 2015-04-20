@@ -288,6 +288,40 @@ def get_user_gatherings(id):
     
     return jsonify(result)
 
+
+@app.route('%s/user/<int:id>/gatherings/owner' % settings.BASE_URL)
+@token.check_token
+def get_user_gatherings_owner(id):
+    cs = session.CreateSession()
+    se = cs.get_session()
+
+    search = se.query(
+        gathering.Gathering,
+        gathering.GatheringType,
+        user.User,
+    ).join(
+        gathering.GatheringType,
+        gathering.Gathering.gathering_type_id == \
+        gathering.GatheringType.id
+    ).join(
+        user.User,
+        gathering.Gathering.owner_id == user.User.id
+    ).filter(
+        gathering.Gathering.owner_id == id
+    ).all()
+
+    result = dict()
+    result['user'] = {'id': id}
+    result['gatherings'] = list()
+
+    for sss in search:
+        result['gatherings'].append({'name': sss[0].name,
+                                     'type': sss[1].name,
+                                     'id': sss[0].id})
+
+    return jsonify(result)
+
+
 @app.route('%s/user/<int:id>/gatherings/del' % settings.BASE_URL,
     methods=['POST'])
 @token.check_token
