@@ -128,6 +128,17 @@ def add_group_to_user(id):
     se = cs.get_session()
     data = request.get_json()
 
+    search = se.query(
+        mlx_user_group.Group
+    ).filter(
+        mlx_user_group.Group.user_id == id
+    ).filter(
+        mlx_user_group.Group.group_id == data['group']
+    ).first()
+
+    if search is not None:
+        return Response("Group already assigned to the user", 201)
+
     u_group = mlx_user_group.Group(user_id=id, 
         group_id=data['group'])
     se.add(u_group)
