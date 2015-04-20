@@ -153,4 +153,23 @@ def add_group_to_user(id):
 @token.check_token
 @group.its_me
 def del_group_to_user(id):
-    return "delete from from id: %s" % id
+    cs = session.CreateSession()
+    se = cs.get_session()
+    data = request.get_json()
+
+    search = se.query(
+        mlx_user_group.Group
+    ).filter(
+        mlx_user_group.Group.user_id == id
+    ).filter(
+        mlx_user_group.Group.group_id == data['group']
+    ).first()
+
+    if search is None:
+        return Response("Nothing to delete", 201)
+
+    se.delete(search)
+    se.commit()
+    se.close()
+
+    return Response("Group deleted", 200)
