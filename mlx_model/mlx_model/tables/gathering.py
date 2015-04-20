@@ -19,3 +19,13 @@ class Gathering(MLXBase):
     gathering_type_id = Column(Integer, 
         ForeignKey('gathering_type.id'))
     owner_id = Column(Integer, ForeignKey('user.id'))
+
+
+class UserGathering(MLXBase):
+    __tablename__ = 'user_gathering'
+
+    id = Column(Integer, primary_key=True)
+    participant_id = Column(Integer, 
+        ForeignKey('user.id'))
+    gathering_id = Column(Integer, 
+        ForeignKey('gathering.id'))
