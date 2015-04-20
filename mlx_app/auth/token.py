@@ -25,8 +25,9 @@ def exists_user_token(given_token):
     today = datetime.now()
     diff = today - dt
 
-    if (diff.seconds / 60) > settings.TOKEN_TTL:
-        return False
+    if settings.TOKEN_TTL != 0:
+        if (diff.seconds / 60) > settings.TOKEN_TTL:
+            return False
 
     if not search.is_valid:
         return False
