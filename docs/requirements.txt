@@ -1,3 +1,5 @@
 Flask==0.10.1
 SQLAlchemy==1.0.0
 ipdb==0.8
+passlib==1.6.2
+SQLAlchemy-Utils==0.30.0
