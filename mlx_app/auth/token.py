@@ -21,7 +21,7 @@ def exists_user_token(given_token):
     if search is None:
         return False
 
-    dt = datetime.strptime(str(search.datetime), "%Y-%m-%d %H:%M:%S")
+    dt = datetime.strptime(str(search.datetime), "%Y-%m-%d %H:%M:%S.%f")
     today = datetime.now()
     diff = today - dt
 
