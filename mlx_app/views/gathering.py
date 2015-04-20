@@ -4,10 +4,11 @@ from mlx_model.mlx_model.tables import gathering, user
 from mlx_model.mlx_model import session
 from mlx_app.auth import token
 from settings import settings
-from flask import jsonify, Response
+from flask import jsonify, Response, request
 
 
 @app.route('%s/gatherings' % settings.BASE_URL)
+@token.check_token
 def get_gatherings():
     cs = session.CreateSession()
     se = cs.get_session()
@@ -42,6 +43,7 @@ def get_gatherings():
 
 
 @app.route('%s/gatherings/<int:id>' % settings.BASE_URL)
+@token.check_token
 def get_gatherings_by_id(id):
     cs = session.CreateSession()
     se = cs.get_session()
@@ -79,6 +81,27 @@ def get_gatherings_by_id(id):
     return jsonify(result)
 
 
-@app.route('%s/gatherings/create' % settings.BASE_URL)
+@app.route('%s/gatherings/create' % settings.BASE_URL,
+    methods=['POST'])
+@token.check_token
 def create_gathering():
-    return "create gathering"
+    data = request.get_json()
+
+    if 'name' in data.keys() and 'type' in data.keys():
+        user_id = token.get_user_by_valid_token(
+            request.headers.get('Token')
+        )
+        new_gathering = gathering.Gathering(
+            name=data['name'],
+            gathering_type_id=data['type'],
+            owner_id=user_id
+        )
+
+        cs = session.CreateSession()
+        se = cs.get_session()
+
+        se.add(new_gathering)
+        se.commit()
+        se.close()
+
+    return Response('Gathering created', 200)
