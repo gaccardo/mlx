@@ -6,6 +6,7 @@ from mlx_app.auth import token
 from settings import settings
 from flask import jsonify, Response, request
 
+
 @app.route('%s/login' % settings.BASE_URL, methods=['POST'])
 def login():
     data = request.get_json()
@@ -16,6 +17,6 @@ def login():
         if user is not None:
             return jsonify({"token":user.token})
         else:
-            return Response("user or password incorrect", 401)
+            return Response("User or password incorrect", 401)
     else:
-        return Response("missing arguments", 403)
+        return Response("Missing arguments", 403)
