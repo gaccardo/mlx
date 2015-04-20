@@ -6,6 +6,23 @@ from settings import settings
 
 from datetime import datetime, date, time
 
+def get_user_by_valid_token(given_token):
+    cs = session.CreateSession()
+    se = cs.get_session()
+
+    search = se.query(
+        token.Token
+    ).filter(
+        token.Token.token == given_token
+    ).filter(
+        token.Token.is_valid == 1
+    ).first()
+    se.close()
+
+    if search is not None:
+        return search.user_id
+    else:
+        return None
 
 def valid_tokens_for_user(user):
     cs = session.CreateSession()

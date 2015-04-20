@@ -6,5 +6,5 @@ app = Flask(__name__)
 app.secret_key = settings.SECRET
 app.config.from_object(__name__)
 
-from views import instrument as instruments_views
+from views import instrument as instruments_views, user as user_views
 from auth.views import login

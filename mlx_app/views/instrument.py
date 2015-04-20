@@ -1,9 +1,11 @@
 from mlx_app import app
+from mlx_app.auth.views import group
 from mlx_model.mlx_model.tables import instrument
 from mlx_model.mlx_model import session
 from mlx_app.auth import token
 from settings import settings
 from flask import jsonify, Response
+
 
 @app.route('%s/instrument' % settings.BASE_URL)
 @token.check_token
@@ -25,6 +27,7 @@ def get_instruments():
 
 
 @app.route('%s/instrument/<int:id>' % settings.BASE_URL)
+@token.check_token
 def get_instrument(id):
     cs = session.CreateSession()
     se = cs.get_session()

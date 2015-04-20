@@ -5,4 +5,4 @@ SECRET="x0nTmrZlVBbQpenAMHsdQNUBOU12ProKTty"
 VERSION="v0.1"
 DB_URL="sqlite:////Users/guido/Workspace/personal/mlx/mlx_model/model/mlx.db"
 BASE_URL="/mlx/api/%s" % VERSION
-TOKEN_TTL=1
+TOKEN_TTL=60
