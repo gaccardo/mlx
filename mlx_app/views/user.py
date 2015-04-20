@@ -90,8 +90,10 @@ def add_instrument_to_user(id):
                                                instrument_id=data['instrument'])
         se.add(new_instrument2user)
         se.commit()
+        se.close()
         return Response('Instrument added to user %d' % id, 200)
     else:
+        se.close()
         return Response('Instrument already assigned to the user', 201)
 
 
@@ -100,8 +102,30 @@ def add_instrument_to_user(id):
 @token.check_token
 @group.its_me
 def del_instrument_to_user(id):
-    return "del instrument to user %s" % id
+    data = request.get_json()
+    cs = session.CreateSession()
+    se = cs.get_session()
 
+    if 'instrument' not in data.keys():
+        return Response('Missing arguments', 403)
+
+    search = se.query(
+        mlx_user_instrument.UserInstrument
+    ).filter(
+        mlx_user_instrument.UserInstrument.user_id == id
+    ).filter(
+        mlx_user_instrument.UserInstrument.instrument_id == \
+        data['instrument']
+    ).first()
+
+    if search is not None:
+        se.delete(search)
+        se.commit()
+        se.close()
+        return Response('Instrument deleted from user %d' % id, 200)
+    else:
+        se.close()
+        return Response('Nothing to delete', 201)
 
 # Groups of the user
 @app.route('%s/user/<int:id>/manage' % settings.BASE_URL, 
