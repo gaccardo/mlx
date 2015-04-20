@@ -26,8 +26,6 @@ def get_gatherings():
         user.User.id
     ).all()
 
-    #import ipdb;ipdb.set_trace()
-
     result = dict()
     result['gatherings'] = list()
 
@@ -35,16 +33,50 @@ def get_gatherings():
         result['gatherings'].append({'name': sss[0].name,
                     'type': sss[1].name,
                     'id': sss[0].id,
-                    'owner_id': {'id': sss[2].id,
+                    'owner': {'id': sss[2].id,
                                  'firstname': sss[2].firstname,
                                  'lastname': sss[2].lastname}})
 
+    se.close()
     return jsonify(result)
 
 
 @app.route('%s/gatherings/<int:id>' % settings.BASE_URL)
 def get_gatherings_by_id(id):
-    return "gatherings id"
+    cs = session.CreateSession()
+    se = cs.get_session()
+
+    search = se.query(
+        gathering.Gathering,
+        gathering.GatheringType,
+        user.User
+    ).join(
+        gathering.GatheringType,
+        gathering.Gathering.gathering_type_id == \
+        gathering.GatheringType.id
+    ).join(
+        user.User,
+        gathering.Gathering.owner_id == \
+        user.User.id
+    ).filter(
+        gathering.Gathering.id == id
+    ).first()    
+
+    result = dict()
+    result['gathering'] = dict()
+
+    if search is None:
+        return jsonify(result)
+
+    result['gathering']['name'] = search[0].name
+    result['gathering']['type'] = search[1].name
+    result['gathering']['owner'] = dict()
+    result['gathering']['owner']['firstname'] = search[2].firstname
+    result['gathering']['owner']['lastname'] = search[2].lastname
+
+    se.close()
+
+    return jsonify(result)
 
 
 @app.route('%s/gatherings/create' % settings.BASE_URL)
