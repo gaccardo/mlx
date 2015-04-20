@@ -19,8 +19,7 @@ def upgrade():
         'token',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('token', sa.String(50), nullable=False),
-        sa.Column('datetime', sa.DateTime(), server_default="now()",
-                  nullable=False),
+        sa.Column('datetime', sa.TIMESTAMP, server_default=sa.func.now()),
         sa.Column('user_id', sa.Integer, sa.ForeignKey('user.id')))
 
 
