@@ -247,8 +247,43 @@ def del_group_to_user(id):
 
     return Response("Group deleted", 200)
 
+
 # Gatherings of the user
 @app.route('%s/user/<int:id>/gatherings' % settings.BASE_URL)
 @token.check_token
 def get_user_gatherings(id):
-    return "Gatherigns for user %d" % id
+    cs = session.CreateSession()
+    se = cs.get_session()
+
+    search = se.query(
+        gathering.Gathering,
+        gathering.GatheringType,
+        user.User,
+        gathering.UserGathering,
+    ).join(
+        gathering.GatheringType,
+        gathering.Gathering.gathering_type_id == \
+        gathering.GatheringType.id
+    ).join(
+        gathering.UserGathering,
+        gathering.UserGathering.gathering_id == \
+        gathering.Gathering.id
+    ).join(
+        user.User,
+        user.User.id == gathering.UserGathering.participant_id
+    ).filter(
+        gathering.UserGathering.participant_id == \
+        id
+    ).all()
+
+    result = dict()
+    result['user'] = {'id': id}
+    result['gatherings'] = list()
+
+    for sss in search:
+        result['gatherings'].append({'name': sss[0].name,
+                                     'type': sss[1].name,
+                                     'id': sss[0].id})
+
+    
+    return jsonify(result)
