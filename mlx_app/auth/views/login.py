@@ -13,4 +13,9 @@ def login():
         aauth = auth_login.Authentication()
         user = aauth.login(data['email'], data['password'])
 
-        return jsonify({"token":user.token})
+        if user is not None:
+            return jsonify({"token":user.token})
+        else:
+            return Response("user or password incorrect", 401)
+    else:
+        return Response("missing arguments", 403)

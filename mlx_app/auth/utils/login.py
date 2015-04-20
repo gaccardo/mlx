@@ -13,7 +13,6 @@ import os
 class Authentication(object):
 
     def generate_token(self, user):
-        import ipdb;ipdb.set_trace()
         pre_token = token_validator.valid_tokens_for_user(user)
         
         if pre_token is not None:
