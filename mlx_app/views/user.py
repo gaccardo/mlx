@@ -287,7 +287,7 @@ def get_user_gatherings(id):
 
     
     return jsonify(result)
-
+    
 
 @app.route('%s/user/<int:id>/gatherings/owner' % settings.BASE_URL)
 @token.check_token
