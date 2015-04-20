@@ -1,6 +1,8 @@
 from mlx_app import app
 from mlx_model.mlx_model.tables import instrument,\
-    user, user_group as mlx_user_group, group as mlx_group
+    user, user_group as mlx_user_group, group as mlx_group,\
+    user_instrument as mlx_user_instrument,\
+    instrument as mlx_instrument
 from mlx_model.mlx_model import session
 from mlx_app.auth import token
 from mlx_app.auth.views import group
@@ -35,7 +37,30 @@ def get_user(id):
     methods=['GET'])
 @token.check_token
 def get_user_instruments(id):
-    return "get user %s instruments" % id
+    cs = session.CreateSession()
+    se = cs.get_session()
+
+    search = se.query(
+        mlx_user_instrument.UserInstrument,
+        mlx_instrument.Instrument
+    ).join(
+        mlx_instrument.Instrument,
+        mlx_instrument.Instrument.id == \
+        mlx_user_instrument.UserInstrument.instrument_id
+    ).filter(
+        mlx_user_instrument.UserInstrument.user_id == id
+    ).all()
+
+    result = dict()
+    result['user'] = {'id': id}
+    result['instruments'] = list()
+
+    if search is not None:
+        for inst in search:
+            result['instruments'].append({'name':inst[1].nombre,
+                                          'description':inst[1].description,
+                                          'id': inst[1].id})
+    return jsonify(result)
 
 
 @app.route('%s/user/<int:id>/instruments/add' % settings.BASE_URL,
