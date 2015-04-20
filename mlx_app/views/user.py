@@ -2,14 +2,14 @@ from mlx_app import app
 from mlx_model.mlx_model.tables import instrument,\
     user, user_group as mlx_user_group, group as mlx_group,\
     user_instrument as mlx_user_instrument,\
-    instrument as mlx_instrument
+    instrument as mlx_instrument, gathering
 from mlx_model.mlx_model import session
 from mlx_app.auth import token
 from mlx_app.auth.views import group
 from settings import settings
 from flask import jsonify, Response, request
 
-
+# User profile
 @app.route('%s/user/<int:id>' % settings.BASE_URL)
 @token.check_token
 def get_user(id):
@@ -246,3 +246,9 @@ def del_group_to_user(id):
     se.close()
 
     return Response("Group deleted", 200)
+
+# Gatherings of the user
+@app.route('%s/user/<int:id>/gatherings' % settings.BASE_URL)
+@token.check_token
+def get_user_gatherings(id):
+    return "Gatherigns for user %d" % id

@@ -8,3 +8,14 @@ class GatheringType(MLXBase):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
+
+
+
+class Gathering(MLXBase):
+    __tablename__ = 'gathering'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False)
+    gathering_type_id = Column(Integer, 
+        ForeignKey('gathering_type.id'))
+    owner_id = Column(Integer, ForeignKey('user.id'))
