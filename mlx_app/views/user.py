@@ -397,6 +397,7 @@ def get_my_invitations(id):
                                   'lastname': sss[3].lastname,
                                   'id': sss[3].id}})
 
+    se.close()
     return jsonify(result)
 
 
@@ -404,4 +405,41 @@ def get_my_invitations(id):
 @token.check_token
 @group.its_me
 def get_my_invites(id):
-    return "get my invitates"
+    cs = session.CreateSession()
+    se = cs.get_session()
+    
+    search = se.query(
+        gathering.Invite,
+        gathering.Gathering,
+        gathering.GatheringType,
+        user.User
+    ).join(
+        gathering.Gathering,
+        gathering.Gathering.id == \
+        gathering.Invite.gathering_id
+    ).join(
+        gathering.GatheringType,
+        gathering.GatheringType.id == \
+        gathering.Gathering.gathering_type_id
+    ).join(
+        user.User,
+        user.User.id == \
+        gathering.Invite.user_id
+    ).filter(
+        gathering.Gathering.owner_id == id
+    ).all()
+
+    result = dict()
+    result['invites'] = list()
+
+    if len(search) > 0:
+        for sss in search:
+            result['invites'].append({'name': sss[1].name,
+                        'type': sss[2].name,
+                        'id': sss[0].id,
+                        'owner': {'firstname': sss[3].firstname,
+                                  'lastname': sss[3].lastname,
+                                  'id': sss[3].id}})
+
+    se.close()
+    return jsonify(result)
