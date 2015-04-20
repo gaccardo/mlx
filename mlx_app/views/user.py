@@ -362,7 +362,42 @@ def del_gathering_from_user(id):
 @token.check_token
 @group.its_me
 def get_my_invitations(id):
-    return "get my invitations"
+    cs = session.CreateSession()
+    se = cs.get_session()
+
+    search = se.query(
+        gathering.Invite,
+        gathering.Gathering,
+        gathering.GatheringType,
+        user.User
+    ).join(
+        gathering.Gathering,
+        gathering.Invite.gathering_id == \
+        gathering.Gathering.id
+    ).join(
+        user.User,
+        user.User.id == gathering.Gathering.owner_id
+    ).join(
+        gathering.GatheringType,
+        gathering.Gathering.gathering_type_id == \
+        gathering.GatheringType.id
+    ).filter(
+        gathering.Invite.user_id == id
+    ).all()
+
+    result = dict()
+    result['invitations'] = list()
+
+    if len(search) > 0:
+        for sss in search:
+            result['invitations'].append({'name': sss[1].name,
+                        'type': sss[2].name,
+                        'id': sss[0].id,
+                        'owner': {'firstname': sss[3].firstname,
+                                  'lastname': sss[3].lastname,
+                                  'id': sss[3].id}})
+
+    return jsonify(result)
 
 
 @app.route('%s/user/<int:id>/invites' % settings.BASE_URL)
