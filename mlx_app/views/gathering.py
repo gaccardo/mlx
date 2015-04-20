@@ -81,6 +81,51 @@ def get_gatherings_by_id(id):
     return jsonify(result)
 
 
+@app.route('%s/gatherings/<int:id>/invite' % settings.BASE_URL,
+    methods=['POST'])
+@token.check_token
+@group.its_mine
+def invite_to_my_gathering(id):
+    data = request.get_json()
+
+    if data is None:
+        return Response("Missing arguments", 403)
+
+    if 'user' in data.keys():
+        cs = session.CreateSession()
+        se = cs.get_session()
+
+        search = se.query(
+            gathering.UserGathering
+        ).filter(
+            gathering.UserGathering.gathering_id == id
+        ).filter(
+            gathering.UserGathering.participant_id == data['user']
+        ).first()
+
+        if search is not None:
+            return Response("User is already in the gathering", 201)
+
+        search = se.query(
+            gathering.Invite
+        ).filter(
+            gathering.Invite.gathering_id == id
+        ).filter(
+            gathering.Invite.user_id == data['user']
+        ).first()
+
+        if search is not None:
+            se.close()
+            return Response("Still waiting for user response", 201)
+        else:
+            new_invite = gathering.Invite(gathering_id=id,
+                                          user_id=data['user'])
+            se.add(new_invite)
+            se.commit()
+
+            se.close()
+            return Response("Invitation sent", 200)
+
 @app.route('%s/gatherings/create' % settings.BASE_URL,
     methods=['POST'])
 @token.check_token
