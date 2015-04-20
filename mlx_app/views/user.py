@@ -287,7 +287,7 @@ def get_user_gatherings(id):
 
     
     return jsonify(result)
-    
+
 
 @app.route('%s/user/<int:id>/gatherings/owner' % settings.BASE_URL)
 @token.check_token
@@ -355,3 +355,18 @@ def del_gathering_from_user(id):
     se.close()
 
     return Response("User removed from gathering", 200)
+
+# Invitations
+
+@app.route('%s/user/<int:id>/invitations' % settings.BASE_URL)
+@token.check_token
+@group.its_me
+def get_my_invitations(id):
+    return "get my invitations"
+
+
+@app.route('%s/user/<int:id>/invites' % settings.BASE_URL)
+@token.check_token
+@group.its_me
+def get_my_invites(id):
+    return "get my invitates"
