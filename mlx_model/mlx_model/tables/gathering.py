@@ -29,3 +29,11 @@ class UserGathering(MLXBase):
         ForeignKey('user.id'))
     gathering_id = Column(Integer, 
         ForeignKey('gathering.id'))
+
+
+class Invite(MLXBase):
+    __tablename__ = 'invite'
+
+    id = Column(Integer, primary_key=True)
+    gathering_id = Column(Integer, ForeignKey('gathering.id'))
+    user_id = Column(Integer, ForeignKey('user.id'))
