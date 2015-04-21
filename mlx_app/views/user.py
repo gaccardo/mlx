@@ -382,6 +382,8 @@ def get_my_invitations(id):
         gathering.GatheringType.id
     ).filter(
         gathering.Invite.user_id == id
+    ).filter(
+        gathering.Invite.state_id == 3
     ).all()
 
     result = dict()
@@ -404,7 +406,34 @@ def get_my_invitations(id):
 @token.check_token
 @group.its_me
 def accept_invitation(id, invitation_id):
-    return "accept invitation %d" % invitation_id
+    cs = session.CreateSession()
+    se = cs.get_session()
+
+    invite = se.query(
+        gathering.Invite
+    ).filter(
+        gathering.Invite.id == invitation_id
+    ).filter(
+        gathering.Invite.user_id == id
+    ).filter(
+        gathering.Invite.state_id == 3
+    ).first()
+
+    if invite is None:
+        return Response("No invitation to answer", 403)
+
+    invite.state_id = 1
+
+    se.merge(invite)
+    se.commit()
+
+    new_user_gathering = gathering.UserGathering(participant_id=id,
+                                                 gathering_id=invite.gathering_id)
+    se.add(new_user_gathering)
+    se.commit()
+    se.close()
+
+    return Response("Invitation accepted", 200)
 
 
 @app.route('%s/user/<int:id>/invitations/<int:invitation_id>/reject' \
@@ -441,6 +470,8 @@ def get_my_invites(id):
         gathering.Invite.user_id
     ).filter(
         gathering.Gathering.owner_id == id
+    ).filter(
+        gathering.Invite.state_id == 3
     ).all()
 
     result = dict()

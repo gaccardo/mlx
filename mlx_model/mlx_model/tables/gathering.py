@@ -31,9 +31,17 @@ class UserGathering(MLXBase):
         ForeignKey('gathering.id'))
 
 
+class InvitationStates(MLXBase):
+    __tablename__ = 'invitation_states'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False)
+
+
 class Invite(MLXBase):
     __tablename__ = 'invite'
 
     id = Column(Integer, primary_key=True)
     gathering_id = Column(Integer, ForeignKey('gathering.id'))
     user_id = Column(Integer, ForeignKey('user.id'))
+    state_id = Column(Integer, ForeignKey('invitation_states.id'))
